@@ -1,14 +1,12 @@
-﻿using System.Net;
-using System.Net.Sockets;
-using System.Text;
-
-namespace SoftuniHTTPServer.HTTP
+﻿namespace SoftuniHTTPServer.HTTP
 {
+    using System.Net;
+    using System.Net.Sockets;
+    using System.Text;
+    using static SoftuniHTTPServer.HTTP.HttpConstants;
+
     public class HttpServer : IHttpServer
     {
-        private const int BufferSize = 4096;
-        private const string NewLine = "\r\n";
-
         IDictionary<string, Func<HttpRequest, HttpResponse>>
             routeTable = new Dictionary<string, Func<HttpRequest, HttpResponse>>();
 
@@ -64,7 +62,7 @@ namespace SoftuniHTTPServer.HTTP
                     }
                     else
                     {
-                    data.AddRange(buffer);
+                        data.AddRange(buffer);
                     }
                 }
 
