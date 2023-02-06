@@ -38,60 +38,69 @@
 
         private async Task ProcessClient(TcpClient tcpClient)
         {
-            using (NetworkStream stream = tcpClient.GetStream())
-            {
-                // TODO: research if there is faster data structure for array of bytes
-                List<byte> data = new List<byte>();
-                int position = 0;
-                byte[] buffer = new byte[BufferSize];
-                while (true)
+            //try
+            //{
+                using (NetworkStream stream = tcpClient.GetStream())
                 {
-                    int count = await stream.ReadAsync(buffer, position, buffer.Length); ;
-
-                    position += count;
-
-                    // because ReadAsync method will read 4092 bytes of information
-                    // but the last part may be less then 4092 and the rest bytes will
-                    // be useless. So we need a way to get rid of does useless bytes
-                    if (count < buffer.Length)
+                    // TODO: research if there is faster data structure for array of bytes
+                    List<byte> data = new List<byte>();
+                    int position = 0;
+                    byte[] buffer = new byte[BufferSize];
+                    while (true)
                     {
-                        var bufferWithData = new byte[count];
-                        Array.Copy(buffer, bufferWithData, count);
-                        data.AddRange(bufferWithData);
-                        break;
+                        int count = await stream.ReadAsync(buffer, position, buffer.Length); ;
+
+                        position += count;
+
+                        // because ReadAsync method will read 4092 bytes of information
+                        // but the last part may be less then 4092 and the rest bytes will
+                        // be useless. So we need a way to get rid of does useless bytes
+                        if (count < buffer.Length)
+                        {
+                            var bufferWithData = new byte[count];
+                            Array.Copy(buffer, bufferWithData, count);
+                            data.AddRange(bufferWithData);
+                            break;
+                        }
+                        else
+                        {
+                            data.AddRange(buffer);
+                        }
                     }
-                    else
-                    {
-                        data.AddRange(buffer);
-                    }
+
+                    // byte[] => string (text) => this is called Encoding 
+                    // (ASCII is one of the ways for encoding, Unicode is another, UTF8)
+
+                    var requestAsString = Encoding.UTF8.GetString(data.ToArray());
+
+                    var request = new HttpRequest(requestAsString);
+                    Console.WriteLine($"{request.Method} {request.Path} => {request.Headers.Count} headers");
+
+                    // TODO: extract information from infoRequestAsString
+
+                    var responseHtml = "<h1>Welcome</h1>" +
+                        request.Headers.FirstOrDefault(x => x.Name == "User-Agent")?.Value;
+
+                    var responseBodyBytes = Encoding.UTF8.GetBytes(responseHtml);
+
+                    var responseHttp = "HTTP/1:1" + NewLine +
+                        "Server: SoftuniHttpServer 1.0" + NewLine +
+                        "Content-Type: text-html" + NewLine +
+                        "Content-Length: " + responseBodyBytes.Length + NewLine +
+                        NewLine;
+
+                    var responseHeaderBytes = Encoding.UTF8.GetBytes(responseHttp);
+
+                    await stream.WriteAsync(responseHeaderBytes);
+                    await stream.WriteAsync(responseBodyBytes);
                 }
 
-                // byte[] => string (text) => this is called Encoding 
-                // (ASCII is one of the ways for encoding, Unicode is another, UTF8)
-
-                var requestAsString = Encoding.UTF8.GetString(data.ToArray());
-
-                Console.WriteLine(requestAsString);
-
-                // TODO: extract information from infoRequestAsString
-
-                var responseHtml = "<h1>Welcome</h1>";
-
-                var responseBodyBytes = Encoding.UTF8.GetBytes(responseHtml);
-
-                var responseHttp = "HTTP/1:1" + NewLine +
-                    "Server: SoftuniHttpServer 1.0" + NewLine +
-                    "Content-Type: text-html" + NewLine +
-                    "Content-Length: " + responseBodyBytes.Length + NewLine +
-                    NewLine;
-
-                var responseHeaderBytes = Encoding.UTF8.GetBytes(responseHttp);
-
-                await stream.WriteAsync(responseHeaderBytes);
-                await stream.WriteAsync(responseBodyBytes);
-            }
-
-            tcpClient.Close();
+                tcpClient.Close();
+            //}
+            //catch (Exception ex)
+            //{
+            //    Console.WriteLine(ex);
+            //}
         }
     }
 }
