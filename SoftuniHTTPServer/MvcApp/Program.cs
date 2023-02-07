@@ -1,4 +1,5 @@
 ﻿using SoftuniHTTPServer.HTTP;
+using System.Text;
 
 IHttpServer server = new HttpServer();
 
@@ -11,12 +12,19 @@ await server.StartAsync(80);
 
 static HttpResponse HomePage(HttpRequest request)
 {
-    throw new NotImplementedException();
+    var responseHtml = "<h1>Welcome</h1>" +
+                    request.Headers.FirstOrDefault(x => x.Name == "User-Agent")?.Value;
+    var responseBodyBytes = Encoding.UTF8.GetBytes(responseHtml);
+    var response = new HttpResponse("text/html", responseBodyBytes);
+    return response;
 }
 
 static HttpResponse About(HttpRequest request)
 {
-    throw new NotImplementedException();
+    var responseHtml = "<h1>About...</h1>";
+    var responseBodyBytes = Encoding.UTF8.GetBytes(responseHtml);
+    var response = new HttpResponse("text/html", responseBodyBytes);
+    return response;
 }
 
 static HttpResponse Login(HttpRequest request)
@@ -26,5 +34,7 @@ static HttpResponse Login(HttpRequest request)
 
 static HttpResponse Favicon(HttpRequest request)
 {
-    throw new NotImplementedException();
+    var fileBytes = File.ReadAllBytes("wwwroot/favicon.ico");
+    var response = new HttpResponse("image.vnd.microsoft.icon", fileBytes);
+    return response;
 }
