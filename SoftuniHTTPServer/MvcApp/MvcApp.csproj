@@ -11,4 +11,10 @@
     <ProjectReference Include="..\SoftuniHTTPServer.HTTP\SoftuniHTTPServer.HTTP.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="wwwroot\favicon.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
