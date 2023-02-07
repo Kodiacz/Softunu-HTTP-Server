@@ -9,6 +9,12 @@
             this.Value = cookieParts[1];
         }
 
+        public Cookie(string name, string value) 
+        {
+            this.Value = value;
+            this.Name = name;
+        }
+
         public string Name { get; set; }
 
         public string Value { get; set; }
