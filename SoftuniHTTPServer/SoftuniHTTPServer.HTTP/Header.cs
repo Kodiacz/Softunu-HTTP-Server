@@ -10,6 +10,12 @@
             this.Value = headerParts[1];
         }
 
+        public Header(string name, string value) 
+        {
+            this.Name = name;
+            this.Value = value;
+        }
+
         public string Name { get; set; }
 
         public string Value { get; set; }
