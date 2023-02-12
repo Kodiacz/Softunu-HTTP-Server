@@ -3,13 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftuniHTTPServer.HTTP", "SoftuniHTTPServer.HTTP\SoftuniHTTPServer.HTTP.csproj", "{52DC124F-AC84-4B45-ACDA-F7C619E1C7C9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftuniHTTPServer.HTTP", "SoftuniHTTPServer.HTTP\SoftuniHTTPServer.HTTP.csproj", "{52DC124F-AC84-4B45-ACDA-F7C619E1C7C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftuniHTTPServer.MvcFramework", "SoftuniHTTPServer.MvcFramework\SoftuniHTTPServer.MvcFramework.csproj", "{DCA94493-8C69-4C6C-B644-C6428386EACD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SoftuniHTTPServer.MvcFramework", "SoftuniHTTPServer.MvcFramework\SoftuniHTTPServer.MvcFramework.csproj", "{DCA94493-8C69-4C6C-B644-C6428386EACD}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{F86CF0BD-8107-4B32-B5DC-6FB236EB208E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcApp", "MvcApp\MvcApp.csproj", "{FA3ACE83-C04D-4D8A-87C0-D594DF065164}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MvcApp", "MvcApp\MvcApp.csproj", "{FA3ACE83-C04D-4D8A-87C0-D594DF065164}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SoftuniHTTPServer.MvcFramework.Tests", "SoftuniHTTPServer.MvcFramework.Tests\SoftuniHTTPServer.MvcFramework.Tests.csproj", "{32568965-EF06-47D3-90B4-D4D7F084B145}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,6 +31,10 @@ Global
 		{FA3ACE83-C04D-4D8A-87C0-D594DF065164}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FA3ACE83-C04D-4D8A-87C0-D594DF065164}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FA3ACE83-C04D-4D8A-87C0-D594DF065164}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32568965-EF06-47D3-90B4-D4D7F084B145}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32568965-EF06-47D3-90B4-D4D7F084B145}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32568965-EF06-47D3-90B4-D4D7F084B145}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32568965-EF06-47D3-90B4-D4D7F084B145}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
