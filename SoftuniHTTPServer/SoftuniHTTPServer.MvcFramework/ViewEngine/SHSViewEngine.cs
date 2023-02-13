@@ -3,67 +3,103 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.Emit;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace SoftuniHTTPServer.MvcFramework.ViewEngine
 {
-    public class SHSViewEngine : IViewEngine
+    public class ShsViewEngine : IViewEngine
     {
         public string GetHtml(string templateCode, object viewModel)
         {
-            string csharpCode = GenerateCSharpFromTemplate(templateCode);
+            string csharpCode = GenerateCSharpFromTemplate(templateCode, viewModel);
             IView executableObject = GenerateExecutableCode(csharpCode, viewModel);
             string html = executableObject.ExecuteTemplate(viewModel);
             return html;
         }
 
-        private string GenerateCSharpFromTemplate(string templateCode)
+        private string GenerateCSharpFromTemplate(string templateCode, object viewModel)
         {
-            string csSharpCode = @"
-                using System;
-                using System.Text;
-                using System.Linq;
-                using System.Collections.Generic;
-                using SoftuniHTTPServer.MvcFramework.ViewEngine;
-
-                namespace ViewNamespace
+            string typeOfModel = "object";
+            if(viewModel != null)
+            {
+                if (viewModel.GetType().IsGenericType)
                 {
-                    public class ViewClass : IView
-                    {
-                        public string ExecuteTemplate(object viewModel)
-                        {
-                            var html = new StringBuilder();
+                    var modelName = viewModel.GetType().FullName!;
+                    var genericArguments = viewModel.GetType().GenericTypeArguments;
+                    typeOfModel = modelName.Substring(0, modelName.IndexOf('`'))
+                        + "<" + string.Join(",", genericArguments.Select(x => x.FullName)) + ">";
+                }
+                else
+                {
+                    typeOfModel = viewModel.GetType().FullName!;
+                }
+            } 
 
-                            " + GetMethodBody(templateCode) + @"
+            string csSharpCode = @"
+using System;
+using System.Text;
+using System.Linq;
+using System.Collections.Generic;
+using SoftuniHTTPServer.MvcFramework.ViewEngine;
+
+namespace ViewNamespace
+{
+    public class ViewClass : IView
+    {
+        public string ExecuteTemplate(object viewModel)
+        {
+            var Model = viewModel as " + typeOfModel + @";
+            var html = new StringBuilder();
+
+            " + GetMethodBody(templateCode) + @"
                             
-                            return html.ToString();
-                        }
-                    }
-                }";
-
+            return html.ToString();
+        }
+    }
+}
+";
 
             return csSharpCode;
         }
 
         private string GetMethodBody(string templateCode)
         {
+            Regex csharpCodeRegex = new Regex(@"[^\""\s&\'\<]+");
+            var supportedOperators = new List<string> { "foreach", "for", "else", "while", "if" };
             StringBuilder csharpCode = new StringBuilder();
             StringReader sr = new StringReader(templateCode);
             string line;
             while ((line = sr.ReadLine()) != null)
             {
-                if (line.TrimStart().StartsWith("@"))
+                if (supportedOperators.Any(so => line.TrimStart().StartsWith("@" + so)))
                 {
                     var atSignLocation = line.IndexOf("@");
                     line = line.Remove(atSignLocation, 1);
                     csharpCode.AppendLine(line);
                 }
-                else if (line.TrimStart().StartsWith("{") || 
+                else if (line.TrimStart().StartsWith("{") ||
                     line.TrimStart().StartsWith("}"))
                 {
                     csharpCode.AppendLine(line);
                 }
+                else
+                {
+                    csharpCode.Append($"html.AppendLine(@\"");
+                    //line = line.Trim();
 
-                csharpCode.AppendLine($"html.AppendLine(@\"{line.Replace("\"", "\"\"")}\");");
+                    while (line.Contains("@"))
+                    {
+                        var atSignLocation = line.IndexOf("@");
+                        var htmlBeforeSignt = line.Substring(0, atSignLocation);
+                        csharpCode.Append(htmlBeforeSignt.Replace("\"", "\"\"") + "\" + ");
+                        var lineAfterAtSign = line.Substring(atSignLocation + 1);
+                        var code = csharpCodeRegex.Match(lineAfterAtSign).Value;
+                        csharpCode.Append(code + " + @\"");
+                        line = lineAfterAtSign.Substring(code.Length);
+                    }
+
+                    csharpCode.AppendLine(line.Replace("\"", "\"\"") + "\");");
+                }
             }
             return csharpCode.ToString();
         }
@@ -119,7 +155,7 @@ namespace SoftuniHTTPServer.MvcFramework.ViewEngine
                     var assembly = Assembly.Load(byteAssembly);
                     var viewType = assembly.GetType("ViewNamespace.ViewClass");
                     var instance = Activator.CreateInstance(viewType);
-                    return (instance as IView)!;
+                    return (instance as IView) ?? new ErrorView(new List<string> { "Instance is null!" }, csharpCode);
                 }
                 catch (Exception ex)
                 {
