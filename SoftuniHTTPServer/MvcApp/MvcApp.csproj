@@ -44,6 +44,9 @@
     <None Update="Views\Commits\Create.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Views\Home\About.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Views\Home\Index.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -137,9 +140,6 @@
     <None Update="wwwroot\img\dog-9.jpg">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="wwwroot\img\favicon.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="wwwroot\img\gifs\hearteyes.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -218,6 +218,10 @@
     <None Update="wwwroot\vendor\popper\popper.min.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Data\" />
   </ItemGroup>
 
 </Project>
