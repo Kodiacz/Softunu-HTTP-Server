@@ -1,26 +1,43 @@
 ﻿namespace SoftuniHTTPServer.MvcFramework
 {
     using SoftuniHTTPServer.HTTP;
+    using SoftuniHTTPServer.MvcFramework.ViewEngine;
     using System.Runtime.CompilerServices;
     using System.Text;
 
     public abstract class Controller
-    //C:\Simeon\Programming\SoftUni\C#-Web-Basics-септември-2020-Nikolay-Kostov\Softunu-HTTP-Server\SoftuniHTTPServer\MvcApp\bin\Debug\net6.0\wwwroot
     {
+        private readonly ShsViewEngine viewEngine;
+
+        public Controller()
+        {
+            this.viewEngine = new ShsViewEngine();
+        }
+
         // CallerMemberName is an attribute that takes the name of the method
         // that is calling View method and it will asign its name to viewPath variable
-        public HttpResponse View([CallerMemberName]string viewPath = null)
+        public HttpResponse View(
+            object viewModel = null,
+            [CallerMemberName]string viewPath = null)
         {
             var layout = System.IO.File.ReadAllText("Views/Shared/_Layout.cshtml");
+            layout = layout.Replace("@RenderBody()", "___VIEW_GOES_HERE___");
+            layout = this.viewEngine.GetHtml(layout, viewModel);
 
             // by reflection and polimorphysm this.GetType() will refer to
             // the class that inherits Controller class and calls this View
             // method
             var controllerName = this.GetType().Name.Replace("Controller", string.Empty) + "/";
+
             var viewContent = System.IO.File.ReadAllText("Views/" + controllerName + viewPath + ".cshtml");
-            var responseHtml = layout.Replace("@RenderBody()", viewContent);
+            viewContent = this.viewEngine.GetHtml(viewContent, viewModel);
+
+            var responseHtml = layout.Replace("___VIEW_GOES_HERE___", viewContent);
+
             var responseBodyBytes = Encoding.UTF8.GetBytes(responseHtml);
+
             var response = new HttpResponse("text/html", responseBodyBytes);
+
             return response;
         }
 
