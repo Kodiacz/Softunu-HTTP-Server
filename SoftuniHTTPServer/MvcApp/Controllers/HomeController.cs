@@ -1,5 +1,6 @@
 ﻿namespace MvcApp.Controllers
 {
+    using MvcApp.ViewModels;
     using SoftuniHTTPServer.HTTP;
     using SoftuniHTTPServer.MvcFramework;
     using System.Text;
@@ -8,15 +9,16 @@
     {
         public HttpResponse Index(HttpRequest request)
         {
-            return View();
+            var viewModel = new HomeViewModel();
+            viewModel.CurrentYear = DateTime.UtcNow.Year;
+            viewModel.Message = "Welcome to Git Repositories";
+            return View(viewModel);
         }
 
+        [HttpGet]
         public HttpResponse About(HttpRequest request)
         {
-            var responseHtml = "<h1>About...</h1>";
-            var responseBodyBytes = Encoding.UTF8.GetBytes(responseHtml);
-            var response = new HttpResponse("text/html", responseBodyBytes);
-            return response;
+            return this.View();
         }
     }
 }
