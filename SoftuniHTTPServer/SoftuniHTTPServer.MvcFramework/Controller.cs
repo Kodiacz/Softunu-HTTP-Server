@@ -14,6 +14,8 @@
             this.viewEngine = new ShsViewEngine();
         }
 
+        public HttpRequest Request { get; set; }   
+
         // CallerMemberName is an attribute that takes the name of the method
         // that is calling View method and it will asign its name to viewPath variable
         public HttpResponse View(
