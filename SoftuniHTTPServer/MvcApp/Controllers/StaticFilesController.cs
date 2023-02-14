@@ -6,72 +6,72 @@
 
     public class StaticFilesController : Controller
     {
-        public HttpResponse Favicon(HttpRequest request)
+        public HttpResponse Favicon()
         {
             return File("wwwroot/favicon.ico", "image/vnd.microsoft.icon");
         }
 
-        public HttpResponse VendorBootStrapCss(HttpRequest arg)
+        public HttpResponse VendorBootStrapCss()
         {
             return File("wwwroot/vendor/bootstrap/bootstrap.min.css", "text/css");
         }
 
-        public HttpResponse LazyCss(HttpRequest arg)
+        public HttpResponse LazyCss()
         {
             return File("wwwroot/css/lazy.css", "text/css");
         }
 
-        public HttpResponse LazyJs(HttpRequest arg)
+        public HttpResponse LazyJs()
         {
             return File("wwwroot/js/lazy.js", "text/javascript");
         }
 
-        public HttpResponse DemoCss(HttpRequest arg)
+        public HttpResponse DemoCss()
         {
             return File("wwwroot/css/demo.css", "text/css");
         }
 
-        public HttpResponse CssBootStrapCss(HttpRequest arg)
+        public HttpResponse CssBootStrapCss()
         {
             return File("wwwroot/css/bootstrap.min.css", "text/css");
         }
 
-        public HttpResponse CssBootStrapJs(HttpRequest arg)
+        public HttpResponse CssBootStrapJs()
         {
             return File("wwwroot/css/bootstrap.min.js", "text/javascript");
         }
 
-        public HttpResponse Jquery(HttpRequest arg)
+        public HttpResponse Jquery()
         {
             return File("wwwroot/vendor/jquery/jquery.min.js", "text/javascript");
         }
 
-        public HttpResponse Popper(HttpRequest arg)
+        public HttpResponse Popper()
         {
             return File("wwwroot/vendor/popper/popper.min.js", "text/javascript");
         }
 
-        public HttpResponse Site(HttpRequest arg)
+        public HttpResponse Site()
         {
             return File("wwwroot/css/site.css", "text/css");
         }
 
-        public HttpResponse VendorBootStrapJs(HttpRequest arg)
+        public HttpResponse VendorBootStrapJs()
         {
             return File("wwwroot/vendor/bootstrap/bootstrap.min.js", "text/javascript");
         }
 
-        public HttpResponse Text(HttpRequest arg)
+        public HttpResponse Text()
         {
             return File("wwwroot/css/text.css", "text/css");
         }
 
-        public HttpResponse ResetCss(HttpRequest arg)
+        public HttpResponse ResetCss()
         {
             return File("wwwroot/css/reset-css.css", "text/css");
         }
 
-        public HttpResponse Noislider(HttpRequest arg)
+        public HttpResponse Noislider()
         {
             return File("wwwroot/vendor/nouislider/js/nouislider.min.js", "text/javascript");
         }

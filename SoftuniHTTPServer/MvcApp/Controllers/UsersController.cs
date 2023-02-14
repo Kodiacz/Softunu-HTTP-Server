@@ -7,23 +7,28 @@
 
     public class UsersController : Controller
     {
-        public HttpResponse Login(HttpRequest request)
-        {
-            return View();
-        }
-        
-        public HttpResponse Register(HttpRequest request)
+        [HttpGet]
+        public HttpResponse Login()
         {
             return View();
         }
 
-        public HttpResponse DoLogin(HttpRequest arg)
+        [HttpPost("/Users/Login")]
+        public HttpResponse DoLogin()
         {
+            var test = this.Request;
             // TODO: READ DATA
             // TODO: CHECK DATA
             // TODO: LOG USER
             // TODO: HOME PAGE
             return this.Redirect("/");
         }
+
+        [HttpGet]
+        public HttpResponse Register()
+        {
+            return View();
+        }
+
     }
 }

@@ -6,12 +6,13 @@
 
     public class CommitsController : Controller
     {
-        public HttpResponse All(HttpRequest request)
+        public HttpResponse All()
         {
             return View();
         }
-        
-        public HttpResponse Create(HttpRequest request)
+
+        [HttpGet("/Commits/Create")]
+        public HttpResponse Create()
         {
             return View();
         }
