@@ -1,5 +1,6 @@
 ﻿namespace SoftuniHTTPServer.HTTP
 {
+    using System.Net;
     using System.Text;
     using static SoftuniHTTPServer.HTTP.HttpConstants;
 
@@ -9,6 +10,7 @@
         {
             this.Headers = new List<Header>();
             this.Cookies = new List<Cookie>();
+            this.FormData = new Dictionary<string, string>();
 
             var lines = requestString.Split(new string[] { NewLine }, StringSplitOptions.None);
 
@@ -68,6 +70,17 @@
             }
 
             this.Body = bodyBuilder.ToString();
+            var parametars = this.Body.Split("&", StringSplitOptions.RemoveEmptyEntries);
+            foreach (var parametar in parametars)
+            {
+                var parametarParts = parametar.Split("=");
+                var key = parametarParts[0];
+                var value = WebUtility.UrlDecode(parametarParts[1]);
+                if (!this.FormData.ContainsKey(key))
+                {
+                    this.FormData.Add(key, value);
+                }
+            }
         }
 
         public string Path { get; set; }
@@ -77,6 +90,8 @@
         public ICollection<Header> Headers { get; set; }
 
         public ICollection<Cookie> Cookies { get; set; }
+
+        public IDictionary<string, string> FormData { get; set; }
 
         public string Body { get; set; }
     }
