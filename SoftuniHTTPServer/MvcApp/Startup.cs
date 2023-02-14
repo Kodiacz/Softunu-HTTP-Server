@@ -9,15 +9,16 @@
     {
         public void Configure(List<Route> routeTable)
         {
-            routeTable.Add(new Route("/", HttpMethod.Get, new HomeController().Index));
-            routeTable.Add(new Route("/about", HttpMethod.Get, new HomeController().About));
-            routeTable.Add(new Route("/Users/Login", HttpMethod.Get, new UsersController().Login));
-            routeTable.Add(new Route("/Users/Login", HttpMethod.Post, new UsersController().DoLogin));
-            routeTable.Add(new Route("/Users/Register", HttpMethod.Get, new UsersController().Register));
-            routeTable.Add(new Route("/Repositories/All", HttpMethod.Get, new RepositoryController().All));
-            routeTable.Add(new Route("/Repositories/Create", HttpMethod.Get, new RepositoryController().Create));
-            routeTable.Add(new Route("/Commits/Create", HttpMethod.Get, new CommitsController().Create));
-            routeTable.Add(new Route("/Commits/All", HttpMethod.Get, new CommitsController().All));
+            // All custom routes:
+            //routeTable.Add(new Route("/", HttpMethod.Get, new HomeController().Index));
+            //routeTable.Add(new Route("/about", HttpMethod.Get, new HomeController().About));
+            //routeTable.Add(new Route("/Users/Login", HttpMethod.Get, new UsersController().Login));
+            //routeTable.Add(new Route("/Users/Login", HttpMethod.Post, new UsersController().DoLogin));
+            //routeTable.Add(new Route("/Users/Register", HttpMethod.Get, new UsersController().Register));
+            //routeTable.Add(new Route("/Repositories/All", HttpMethod.Get, new RepositoryController().All));
+            //routeTable.Add(new Route("/Repositories/Create", HttpMethod.Get, new RepositoryController().Create));
+            //routeTable.Add(new Route("/Commits/Create", HttpMethod.Get, new CommitsController().Create));
+            //routeTable.Add(new Route("/Commits/All", HttpMethod.Get, new CommitsController().All));
 
             // All Static Files:
             //routeTable.Add(new Route("/favicon.ico", HttpMethod.Get, new StaticFilesController().Favicon));
