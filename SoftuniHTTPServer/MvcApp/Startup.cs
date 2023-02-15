@@ -1,6 +1,8 @@
 ﻿namespace MvcApp
 {
+    using Microsoft.EntityFrameworkCore;
     using MvcApp.Controllers;
+    using MvcApp.Data;
     using SoftuniHTTPServer.HTTP;
     using SoftuniHTTPServer.MvcFramework;
     using System.Collections.Generic;
@@ -39,7 +41,7 @@
 
         public void ConfigureServices()
         {
-
+            new ApplicationDbContext().Database.Migrate();
         }
     }
 }
