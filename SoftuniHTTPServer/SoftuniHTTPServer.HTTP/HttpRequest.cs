@@ -69,11 +69,29 @@
                 }
             }
 
+            var sessionCookie = this.Cookies.FirstOrDefault(x => x.Name == SessionCookieName);
+            if (sessionCookie == null)
+            {
+                var sessionId = Guid.NewGuid().ToString();
+                this.Session = new Dictionary<string, string>();
+                Sessions.Add(sessionId, this.Session);
+                this.Cookies.Add(new Cookie(SessionCookieName, sessionId));
+            }
+            else if (!Sessions.ContainsKey(sessionCookie.Value))
+            {
+                this.Session = new Dictionary<string, string>();
+                Sessions.Add(sessionCookie.Value, this.Session);
+            }
+            else
+            {
+                this.Session = Sessions[sessionCookie.Value];
+            }
+
             this.Body = bodyBuilder.ToString();
             var parametars = this.Body.Split("&", StringSplitOptions.RemoveEmptyEntries);
             foreach (var parametar in parametars)
             {
-                var parametarParts = parametar.Split("=");
+                var parametarParts = parametar.Split("=", 2);
                 var key = parametarParts[0];
                 var value = WebUtility.UrlDecode(parametarParts[1]);
                 if (!this.FormData.ContainsKey(key))
@@ -82,6 +100,9 @@
                 }
             }
         }
+
+        public static IDictionary<string, Dictionary<string, string>>
+            Sessions = new Dictionary<string, Dictionary<string, string>>();
 
         public string Path { get; set; }
 
@@ -92,6 +113,8 @@
         public ICollection<Cookie> Cookies { get; set; }
 
         public IDictionary<string, string> FormData { get; set; }
+
+        public Dictionary<string, string> Session { get; set; }
 
         public string Body { get; set; }
     }

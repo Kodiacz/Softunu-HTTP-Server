@@ -13,7 +13,7 @@ namespace SoftuniHTTPServer.MvcFramework.ViewEngine
             this.csharpCode = csharpCode;
         }
 
-        public string ExecuteTemplate(object viewModel)
+        public string ExecuteTemplate(object viewModel, object user)
         {
             var html = new StringBuilder();
             html.AppendLine($"<h1>View compile errors: {this.errors.Count()}</h1><ul>");
