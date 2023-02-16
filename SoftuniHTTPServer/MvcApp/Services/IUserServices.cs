@@ -2,9 +2,9 @@
 {
     public interface IUserServices
     {
-        Task CreateUser(string username, string email, string password);
+        void CreateUser(string username, string email, string password);
 
-        bool IsUserValid(string username, string password);
+        object GetUserId(string username, string password);
 
         bool IsUsernameAvailable(string username);
 

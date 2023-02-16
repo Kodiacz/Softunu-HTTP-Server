@@ -9,28 +9,30 @@
     {
         private readonly ApplicationDbContext dbContext;
 
-        public UserServices(ApplicationDbContext dbContext)
+        public UserServices()
         {
-            this.dbContext = dbContext;
+            this.dbContext = new ApplicationDbContext();
         }
 
-        public async Task CreateUser(string username, string email, string password)
+        public void CreateUser(string username, string email, string password)
         {
-            var user = new User() 
-            { 
-                Username = username, 
-                Email = email, 
-                Password = ComputeHash(password), 
+            var user = new User()
+            {
+                Id = Guid.NewGuid().ToString(),
+                Username = username,
+                Email = email,
+                Password = ComputeHash(password),
                 Role = IdentityRole.User
             };
-            await this.dbContext.Users.AddAsync(user);
-            await this.dbContext.SaveChangesAsync();
+
+            this.dbContext.Add(user);
+            this.dbContext.SaveChangesAsync();
         }
 
-        public bool IsUserValid(string username, string password)
+        public object GetUserId(string username, string password)
         {
             var user = this.dbContext.Users.FirstOrDefault(x => x.Username == username);
-            return user?.Password == ComputeHash(password);
+            return user?.Id;
         }
 
         public bool IsEmailAvailable(string email)
