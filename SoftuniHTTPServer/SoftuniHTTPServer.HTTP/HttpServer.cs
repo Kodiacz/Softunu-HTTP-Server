@@ -28,79 +28,79 @@
 
         private async Task ProcessClient(TcpClient tcpClient)
         {
-            //try
-            //{
-            using (NetworkStream stream = tcpClient.GetStream())
+            try
             {
-                // TODO: research if there is faster data structure for array of bytes
-                List<byte> data = new List<byte>();
-                int position = 0;
-                byte[] buffer = new byte[BufferSize];
-                while (true)
+                using (NetworkStream stream = tcpClient.GetStream())
                 {
-                    int count = await stream.ReadAsync(buffer, position, buffer.Length);
-
-                    position += count;
-
-                    // because ReadAsync method will read 4092 bytes of information
-                    // but the last part may be less then 4092 and the rest bytes will
-                    // be useless. So we need a way to get rid of does useless bytes
-                    if (count < buffer.Length)
+                    // TODO: research if there is faster data structure for array of bytes
+                    List<byte> data = new List<byte>();
+                    int position = 0;
+                    byte[] buffer = new byte[BufferSize];
+                    while (true)
                     {
-                        var bufferWithData = new byte[count];
-                        Array.Copy(buffer, bufferWithData, count);
-                        data.AddRange(bufferWithData);
-                        break;
+                        int count = await stream.ReadAsync(buffer, position, buffer.Length);
+
+                        position += count;
+
+                        // because ReadAsync method will read 4092 bytes of information
+                        // but the last part may be less then 4092 and the rest bytes will
+                        // be useless. So we need a way to get rid of does useless bytes
+                        if (count < buffer.Length)
+                        {
+                            var bufferWithData = new byte[count];
+                            Array.Copy(buffer, bufferWithData, count);
+                            data.AddRange(bufferWithData);
+                            break;
+                        }
+                        else
+                        {
+                            data.AddRange(buffer);
+                        }
+                    }
+
+                    // byte[] => string (text) => this is called Encoding 
+                    // (ASCII is one of the ways for encoding, Unicode is another, UTF8)
+
+                    var requestAsString = Encoding.UTF8.GetString(data.ToArray());
+
+                    var request = new HttpRequest(requestAsString);
+                    Console.WriteLine($"{request.Method} {request.Path} => {request.Headers.Count} headers");
+
+                    HttpResponse response;
+                    var route = this.routeTable.FirstOrDefault(
+                        r => string.Compare(r.Path, request.Path, true) == 0 &&
+                        r.Method == request.Method);
+
+                    if (route != null)
+                    {
+                        response = route.Action(request);
                     }
                     else
                     {
-                        data.AddRange(buffer);
+                        // 404
+                        response = new HttpResponse("text/html", new byte[0], HttpStatusCode.NotFound);
                     }
+                    response.Headers.Add(new Header("Server", "SoftuniHttpServer 1.0"));
+                    var sessionCookie = request.Cookies.FirstOrDefault(x => x.Name == SessionCookieName);
+                    if (sessionCookie != null)
+                    {
+                        var responseSessionCookie = new ResponseCookie(SessionCookieName, sessionCookie.Value);
+                        responseSessionCookie.Path = "/";
+                        response.Cookies.Add(responseSessionCookie);
+                    }
+
+                    var responseHeaderBytes = Encoding.UTF8.GetBytes(response.ToString());
+
+                    await stream.WriteAsync(responseHeaderBytes);
+                    await stream.WriteAsync(response.Body);
                 }
 
-                // byte[] => string (text) => this is called Encoding 
-                // (ASCII is one of the ways for encoding, Unicode is another, UTF8)
-
-                var requestAsString = Encoding.UTF8.GetString(data.ToArray());
-
-                var request = new HttpRequest(requestAsString);
-                Console.WriteLine($"{request.Method} {request.Path} => {request.Headers.Count} headers");
-
-                HttpResponse response;
-                var route = this.routeTable.FirstOrDefault(
-                    r => string.Compare(r.Path, request.Path, true) == 0 &&
-                    r.Method == request.Method);
-
-                if (route != null)
-                {
-                    response = route.Action(request);
-                }
-                else
-                {
-                    // 404
-                    response = new HttpResponse("text/html", new byte[0], HttpStatusCode.NotFound);
-                }
-                response.Headers.Add(new Header("Server", "SoftuniHttpServer 1.0"));
-                var sessionCookie = request.Cookies.FirstOrDefault(x => x.Name == SessionCookieName);
-                if (sessionCookie != null)
-                {
-                    var responseSessionCookie = new ResponseCookie(SessionCookieName, sessionCookie.Value);
-                    responseSessionCookie.Path = "/";
-                    response.Cookies.Add(responseSessionCookie);
-                }
-
-                var responseHeaderBytes = Encoding.UTF8.GetBytes(response.ToString());
-
-                await stream.WriteAsync(responseHeaderBytes);
-                await stream.WriteAsync(response.Body);
+                tcpClient.Close();
             }
-
-            tcpClient.Close();
-            //}
-            //catch (Exception ex)
-            //{
-            //    Console.WriteLine(ex);
-            //}
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
     }
 }
