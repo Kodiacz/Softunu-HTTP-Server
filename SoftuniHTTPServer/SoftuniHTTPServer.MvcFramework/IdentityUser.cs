@@ -4,6 +4,7 @@ namespace SoftuniHTTPServer.MvcFramework
 {
     public class IdentityUser<T>
     {
+        [Key]
         public T Id { get; set; }
 
         [Required]
