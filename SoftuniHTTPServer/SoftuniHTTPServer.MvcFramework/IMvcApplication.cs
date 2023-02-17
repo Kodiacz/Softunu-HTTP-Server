@@ -4,7 +4,7 @@
 
     public interface IMvcApplication
     {
-        void ConfigureServices();
+        void ConfigureServices(IServiceCollection serviceCollection);
 
         void Configure(List<Route> routeTable);
     }
