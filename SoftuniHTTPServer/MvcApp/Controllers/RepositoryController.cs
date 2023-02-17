@@ -17,6 +17,12 @@
         {
             return View();
         }
+        
+        [HttpGet("/Repositories/Create")]
+        public HttpResponse DoCreate(CreateRepositoryViewModel model)
+        {
+            return Redirect("Repositories/All");
+        }
 
         [HttpPost("/Repositories/Create")]
         public HttpResponse PostCreate()
