@@ -92,7 +92,10 @@
                     var responseHeaderBytes = Encoding.UTF8.GetBytes(response.ToString());
 
                     await stream.WriteAsync(responseHeaderBytes);
-                    await stream.WriteAsync(response.Body);
+                    if (response.Body != null && response.Body.Length > 0)
+                    {
+                        await stream.WriteAsync(response.Body);
+                    }
                 }
 
                 tcpClient.Close();
