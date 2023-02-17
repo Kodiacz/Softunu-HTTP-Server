@@ -5,13 +5,24 @@
     using System.Security.Cryptography;
     using System.Text;
 
-    public class UserServices : IUserServices
+    public class UserService : IUserService
     {
         private readonly ApplicationDbContext dbContext;
 
-        public UserServices()
+        public UserService(ApplicationDbContext dbContext)
         {
-            this.dbContext = new ApplicationDbContext();
+            //// This is a bad practice and this class (UserServices) 
+            //// can't choose what type should the dbContext be.
+            //// The type of the dbContext should come from outside this
+            //// class (dependancy inversion). And along thah it comes the 
+            //// other principle (lisov substitution) the parameter that comes
+            //// should not break the application, this means if the
+            //// type is interface or abstract class then the concrete type
+            //// should replace it without any problems:
+            // this.dbContext = new ApplicationDbContext();
+
+            // it should be like this:
+            this.dbContext = dbContext;
         }
 
         public void CreateUser(string username, string email, string password)

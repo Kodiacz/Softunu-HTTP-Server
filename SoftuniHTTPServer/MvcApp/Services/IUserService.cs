@@ -1,6 +1,6 @@
 ﻿namespace MvcApp.Services
 {
-    public interface IUserServices
+    public interface IUserService
     {
         void CreateUser(string username, string email, string password);
 
