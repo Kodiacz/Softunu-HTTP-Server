@@ -1,24 +1,29 @@
 ﻿namespace SoftuniHTTPServer.MvcFramework
 {
     using SoftuniHTTPServer.HTTP;
+    using System.Reflection;
     using HttpMethod = SoftuniHTTPServer.HTTP.HttpMethod;
 
-    public static class Host
+    public static class Host 
     {
         public static async Task CreateHostAsync(IMvcApplication app, int port = 80)
         {
             // TODO: {controller}/{action}/{id}
             List<Route> routeTable = new List<Route>();
-            RegisterStaticFiles(routeTable);
-            RegisterRoutes(routeTable, app);
-            app.ConfigureServices();
+            IServiceCollection serviceCollection = new ServiceCollection();
+
+            app.ConfigureServices(serviceCollection);
             app.Configure(routeTable);
+
+            RegisterStaticFiles(routeTable);
+            RegisterRoutes(routeTable, app, serviceCollection);
+
             IHttpServer server = new HttpServer(routeTable);
 
             await server.StartAsync(port);
         }
 
-        private static void RegisterRoutes(List<Route> routeTable, IMvcApplication app)
+        private static void RegisterRoutes(List<Route> routeTable, IMvcApplication app, IServiceCollection serviceCollection)
         {
             // give me all types that are class, that are not abstract and those that
             // inherit from Controller class (Reflection)
@@ -56,16 +61,63 @@
                         url = attribute.Url;
                     }
 
-                    routeTable.Add(new Route(url, httpMethod, (request) =>
-                    {
-                        var instance = Activator.CreateInstance(controller) as Controller;
-                        instance.Request = request;
-                        var res = method.Invoke(instance, new object[] { }) as HttpResponse;
-                        return res;
-                    }));
+                    routeTable.Add(new Route(
+                        url, 
+                        httpMethod, 
+                        request => ExecuteAction(request, controller, method, serviceCollection)));
 
                 }
             }
+        }
+
+        private static HttpResponse ExecuteAction(
+            HttpRequest request, 
+            Type controller, 
+            MethodInfo action, 
+            IServiceCollection serviceCollection)
+        {
+            var instance = serviceCollection.CreateInstance(controller) as Controller;
+            instance.Request = request;
+            var arguments = new List<object> { };
+            var parametars = action.GetParameters();
+            foreach (var param in parametars)
+            {
+                var httpParamValue = GetParametarFromRequest(request, param.Name);
+                var paramValue = Convert.ChangeType(request, param.ParameterType);
+                if (paramValue == null && param.ParameterType != typeof(string))
+                {
+                    paramValue = Activator.CreateInstance(param.ParameterType);
+                    var properties = paramValue.GetType().GetRuntimeProperties();
+                    foreach (var property in properties)
+                    {
+                        var propertyHttpParamValue = GetParametarFromRequest(request, property.Name);
+                        var propertyParamValue = Convert.ChangeType(request, property.PropertyType);
+                        property.SetValue(paramValue, propertyParamValue);
+                    }
+                }
+
+                arguments.Add(paramValue);
+            }
+            var res = action.Invoke(instance, arguments.ToArray()) as HttpResponse;
+            return res;
+        }
+
+        private static string GetParametarFromRequest(HttpRequest request, string parametarName)
+        {
+            parametarName = parametarName.ToLower();
+            if (request.FormData.Any(x => x.Key.ToLower() == parametarName))
+            {
+                return request.FormData
+                    .FirstOrDefault(x => x.Key.ToLower() == parametarName).Value;
+            }
+            
+            if (request.QueryData.Any(x => x.Key.ToLower() == parametarName))
+            {
+                return request.QueryData
+                    .FirstOrDefault(x => x.Key.ToLower() == parametarName).Value;
+            }
+
+            return null;
         }
 
         private static void RegisterStaticFiles(List<Route> routeTable)
