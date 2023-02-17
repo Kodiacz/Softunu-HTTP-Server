@@ -11,6 +11,7 @@
             this.Headers = new List<Header>();
             this.Cookies = new List<Cookie>();
             this.FormData = new Dictionary<string, string>();
+            this.QueryData = new Dictionary<string, string>();
 
             var lines = requestString.Split(new string[] { NewLine }, StringSplitOptions.None);
 
@@ -87,16 +88,33 @@
                 this.Session = Sessions[sessionCookie.Value];
             }
 
+            if (this.Path?.Contains("?") ?? false)
+            {
+                var pathParts = this.Path.Split("?", 2);
+                this.Path = pathParts[0];
+                this.QueryString = pathParts[1];
+            }
+            else
+            {
+                QueryString = string.Empty;
+            }
+
             this.Body = bodyBuilder.ToString().TrimEnd('\n', '\r');
-            var parametars = this.Body.Split("&", StringSplitOptions.RemoveEmptyEntries);
+            SplitParametars(this.Body, this.FormData);
+            SplitParametars(this.QueryString, this.QueryData);
+        }
+
+        private void SplitParametars(string parametarsAsString, IDictionary<string, string> output)
+        {
+            var parametars = parametarsAsString.Split("&", StringSplitOptions.RemoveEmptyEntries);
             foreach (var parametar in parametars)
             {
                 var parametarParts = parametar.Split("=", 2);
                 var key = parametarParts[0];
                 var value = WebUtility.UrlDecode(parametarParts[1]);
-                if (!this.FormData.ContainsKey(key))
+                if (!output.ContainsKey(key))
                 {
-                    this.FormData.Add(key, value);
+                    output.Add(key, value);
                 }
             }
         }
@@ -106,6 +124,8 @@
 
         public string Path { get; set; }
 
+        public string QueryString { get; set; }
+
         public HttpMethod Method { get; set; }
 
         public ICollection<Header> Headers { get; set; }
@@ -113,6 +133,8 @@
         public ICollection<Cookie> Cookies { get; set; }
 
         public IDictionary<string, string> FormData { get; set; }
+
+        public IDictionary<string, string> QueryData { get; set; }
 
         public Dictionary<string, string> Session { get; set; }
 
