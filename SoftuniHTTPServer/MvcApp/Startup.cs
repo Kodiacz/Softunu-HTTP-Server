@@ -3,6 +3,7 @@
     using Microsoft.EntityFrameworkCore;
     using MvcApp.Controllers;
     using MvcApp.Data;
+    using MvcApp.Services;
     using SoftuniHTTPServer.HTTP;
     using SoftuniHTTPServer.MvcFramework;
     using System.Collections.Generic;
@@ -11,6 +12,8 @@
     {
         public void Configure(List<Route> routeTable)
         {
+            new ApplicationDbContext().Database.Migrate();
+
             // All custom routes:
             //routeTable.Add(new Route("/", HttpMethod.Get, new HomeController().Index));
             //routeTable.Add(new Route("/about", HttpMethod.Get, new HomeController().About));
@@ -39,9 +42,14 @@
             //routeTable.Add(new Route("/vendor/nouislider/js/nouislider.min.js", HttpMethod.Get, new StaticFilesController().Noislider));
         }
 
-        public void ConfigureServices()
+        public void ConfigureServices(IServiceCollection serviceCollection)
         {
-            new ApplicationDbContext().Database.Migrate();
+            // their actuaclly 3 different type of adding a dependancy:
+            // AddSingleton => only one instance for the whole application
+            // AddTransient => everytime it will call a new instance
+            // AddScoped => only for the timespan of the request (at every request a new instance)
+            serviceCollection.Add<IUserService, UserService>();
+            serviceCollection.Add<IRepositoryService, RepositoryService>();
         }
     }
 }
