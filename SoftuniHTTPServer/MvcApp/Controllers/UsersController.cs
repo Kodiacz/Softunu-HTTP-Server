@@ -1,5 +1,6 @@
 ﻿namespace MvcApp.Controllers
 {
+    using MvcApp.Data;
     using MvcApp.Services;
     using SoftuniHTTPServer.HTTP;
     using SoftuniHTTPServer.MvcFramework;
@@ -10,11 +11,11 @@
 
     public class UsersController : Controller
     {
-        private readonly UserServices userServices;
+        private readonly IUserService userServices;
 
-        public UsersController()
+        public UsersController(IUserService userServices)
         {
-            this.userServices = new UserServices();
+            this.userServices = userServices;
         }
 
         [HttpGet]
@@ -24,10 +25,10 @@
         }
 
         [HttpPost("/Users/Login")]
-        public HttpResponse DoLogin()
+        public HttpResponse DoLogin(string username, string password)
         {
-            var username = this.Request.FormData["username"];
-            var password = this.Request.FormData["password"];
+            //var username = this.Request.FormData["username"];
+            //var password = this.Request.FormData["password"];
             var userId = this.userServices.GetUserId(username, password);
 
             if (userId == null)
@@ -48,12 +49,12 @@
         }
 
         [HttpPost("/Users/Register")]
-        public HttpResponse DoRegister()
+        public HttpResponse DoRegister(string username, string email, string password, string confirmPassword)
         {
-            var username = this.Request.FormData["username"];
-            var email = this.Request.FormData["email"];
-            var password = this.Request.FormData["password"];
-            var confirmPassword = this.Request.FormData["confirmPassword"];
+            //var username = this.Request.FormData["username"];
+            //var email = this.Request.FormData["email"];
+            //var password = this.Request.FormData["password"];
+            //var confirmPassword = this.Request.FormData["confirmPassword"];
 
             //if (username == null || username.Length < 5 || username.Length > 20)
             //{
